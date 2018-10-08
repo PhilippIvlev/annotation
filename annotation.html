@@ -1,0 +1,164 @@
+<html>
+
+<head>
+  <title>Cherry video annotation</title>
+  <link rel="stylesheet" href="hat.css" type="text/css"/>
+
+  <script src="hat.js"></script>
+
+  <style>
+  </style>
+
+  <script type="text/javascript">
+
+  var widget;
+
+  function load() {
+	// Creates a video annotation widget in div#content
+	widget = new VideoAnnotationWidget(document.getElementById('content'), 'test_video.mp4', {
+			loop: false,
+			frameRate: 24,
+			advanced: true, 
+      trails: true,
+      checked:true,
+      scale: 0.85,
+			markerStyle: 'playback', // Makes markers much smaller
+			markerSets: [
+        {name: '0'},
+        {name: '1'},
+        {name: '2'},
+        {name: '3'},
+        {name: '4'},
+        {name: '5'},
+        {name: '6'},
+        {name: '7'},
+        {name: '8'},
+        {name: '9'},
+        {name: '10'},
+        {name: '11'},
+        {name: '12'},
+        {name: '13'},
+        {name: '14'},
+        {name: '15'},
+        {name: '16'},
+        {name: '17'},
+			], 
+      json: '{}'
+    });
+  }
+
+function switchTrack(track_id) {
+    var fullJSON = document.getElementById('json').value,
+    parsedJSON = JSON.parse(fullJSON);
+
+    var track = parsedJSON[track_id];
+    widget.canvas.parse(JSON.stringify(track));    
+
+    // widget.canvas.parse(document.getElementById('json').value);
+  };
+
+function parse() {
+    var fullJSON = document.getElementById('json').value,
+    tracks = JSON.parse(fullJSON);
+
+var pushTracks = [];
+pushTracks.push(tracks);
+console.table(pushTracks);
+
+    for (var track in pushTracks){
+      var target = document.getElementById('target1');
+
+      var newTrackRadioButton = document.createElement('input');
+      newTrackRadioButton.setAttribute("id", track);
+      newTrackRadioButton.setAttribute('type', 'radio');
+      newTrackRadioButton.setAttribute('name', 'fortracks');
+      target.parentNode.insertBefore( newTrackRadioButton, target );
+
+      var newTrackButton = document.createElement('label');
+      newTrackButton.setAttribute("for", track);
+      target.parentNode.insertBefore( newTrackButton, target );
+      newTrackButton.innerHTML = "Track " + track;
+
+      EventHandler.addListener(
+        newTrackButton, 'click', 
+        function(){
+          console.log("Switched to track #" + tracks[this.getAttribute("id")]);
+          widget.canvas.parse(JSON.stringify(pushTracks[this.getAttribute("id")]));
+          
+        },
+        newTrackButton, false);
+    }
+ 
+    widget.canvas.parse(JSON.stringify(tracks[0]));
+
+  };
+
+
+function stringify() {
+var myJson = widget.canvas.stringify();
+  document.getElementById("heig").innerHTML = myJson;
+};
+
+// function addNewMarker(){
+// var addM = confirm("Want to add Marker?");
+// if (addM){
+// var newMname = prompt("Please enter markers name", 'new1');
+// alert(newMname);
+// var newMarker = {};
+// newMarker.enabled = true;
+// newMarker.markers = Array();
+// newMarker.name = newMname;
+
+// //var marker = new Marker({ position: [250, 300] });
+
+// widget.canvas.markerSets.push(newMarker);
+// console.table(widget.canvas.markerSets)
+//
+//else{};
+//}
+
+</script>
+</head>
+
+<body onload="load()">
+
+<header class="bottom_sh">
+  <h1>Cherry video annotation</h1>
+</header>
+
+<div class="wrapper">
+
+  <div>
+    <section id="content">
+    </section>
+  </div>
+
+
+  <div class="wrap_buttons" id="target1">  
+
+    <section style="margin-right: 30px; 
+    margin-left:30px;
+    display: flex;
+    flex-direction:
+    column;">
+      <textarea style="float:left; clear:both;" id="json" cols="80" rows="30"></textarea>
+      <input style="width:125px;
+      margin-top: 20px;
+      align-self: center;" 
+      class="__button" type="button" onclick="parse()" value="Create scheme">
+    </section>
+
+
+    <section style="display: flex;
+    flex-direction: column;">
+      <textarea style="float:left; clear:both;" id="heig" cols="80" rows="30"></textarea>
+      <input style="width:125px;
+        margin-top: 20px;
+        align-self: center;" 
+        type="button"  class="__button" onclick="stringify()" value="Get new data">
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
